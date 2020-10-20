@@ -1,4 +1,4 @@
-# Ejercicio 4
+# Ejercicio 3
 # La Criba de Eratóstenes es un sencillo algoritmo que permite encontrar todos
 # los números primos menores de un número natural dado.
 
