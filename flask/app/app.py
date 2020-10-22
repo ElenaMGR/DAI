@@ -15,7 +15,7 @@ def hello_world():
 #														#
 #########################################################
 
-# Muestra una página para el ejercicio 2 de la P1
+# Muestra una página para el ejercicio 2 de la Práctica 1
 @app.route('/ordena/<cadena>')
 def ordena(cadena):
 	lista = cadena.split(',')
@@ -38,7 +38,7 @@ def ordena(cadena):
 	cadenaFinal = "Ordenando..." + (' - ').join(listaBurbuja)
 	return cadenaFinal
 
-# Muestra una página para el ejercicio 3 de la P1
+# Muestra una página para el ejercicio 3 de la Práctica 1
 @app.route('/criba/<num>')
 def cribaEratostenes(num):
 	if num.isdigit():
@@ -48,7 +48,7 @@ def cribaEratostenes(num):
 	else:
 		return "Debe introducir un número."
 
-# Muestra una página para el ejercicio 4 de la P1
+# Muestra una página para el ejercicio 4 de la Práctica 1
 @app.route('/fibonacci/<num>')
 def fibonacci(num):
 	if num.isdigit():
@@ -57,11 +57,26 @@ def fibonacci(num):
 	else:
 		return "Debe introducir un número."
 
-# Muestra una página para el ejercicio 5 de la P1
-@app.route('/fibonacci/<num>')
-def fibonacci(num):
-	if num.isdigit():
-		sucesion = sfibonacci(int(num))
-		return "El numero de la sucesión de Fibonacci en la posición " + num + " es: " + str(sucesion)
-	else:
-		return "Debe introducir un número."
+# Muestra una página para el ejercicio 5 de la Práctica 1
+@app.route('/balanceo/<cadena>')
+def balanceo(cadena):
+	return balanceada(cadena)
+
+# Muestra una página para el ejercicio 6 de la Práctica 1
+@app.route('/expresiones_regulares/palabraEspMayus/<cadena>')
+def erPalabraEspMayus(cadena):
+	return palabraEspMayus(cadena)
+
+@app.route('/expresiones_regulares/correo/<cadena>')
+def erCorreo(cadena):
+	return correo(cadena)
+
+@app.route('/expresiones_regulares/tarjeta/<cadena>')
+def erTarjeta(cadena):
+	return tarjeta(cadena)
+
+# Muestra una página de error
+@app.errorhandler(404)
+def error_404(error):
+	return "Error 404, page not found", 404
+
