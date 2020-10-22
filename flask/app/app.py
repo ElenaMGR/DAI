@@ -104,3 +104,39 @@ def erTarjeta(cadena):
 def error_404(error):
 	return render_template('error.html'), 404
 
+# Crear Imágenes Dinámicas
+@app.route('/svg')
+def random_svg():
+	figuras=['circle', 'rect', 'ellipse']
+	colores=['red', 'green', 'blue', 'white', 'orange', 'violet', 'purple', 'yellow', 'fuchsia', 'snow', 'darkRed', 'coral', 'mediumPurple', 'orangeRed', 'navy', 'saddleBrown', 'cyan']
+
+	forma = random.choice(figuras)
+	color = random.choice(colores)
+	color_relleno = random.choice(colores)
+
+	fig=forma
+
+	if forma=='circle':
+		cx = random.randint(50, 600)
+		cy = random.randint(50, 600)
+		r = random.randint(30, 100)
+		fig=fig+' cx='+str(cx)+' cy='+str(cy)+' r='+str(r)
+
+	elif forma=='rect':
+		x = random.randint(10, 350)
+		y = random.randint(10, 150)
+		width = random.randint(50, 400)
+		height = random.randint(50, 400)
+		fig=fig+' x='+str(x)+' y='+str(y)+' width='+str(width)+' height='+str(height)
+	
+	elif forma=='ellipse':
+		cx = random.randint(50, 300)
+		cy = random.randint(50, 300)
+		rx = random.randint(50, 300)
+		ry = random.randint(50, 300)
+		fig=fig+' cx='+str(cx)+' cy='+str(cy)+' rx='+str(rx)+' ry='+str(ry)
+
+
+	fig=fig+' stroke='+color+' stroke-width=4 fill='+color_relleno
+
+	return render_template('svg.html', figura=fig)
