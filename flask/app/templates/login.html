@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+
+{% block html_head %}
+<!-- Custom styles for this template -->
+<link href="/static/css/signin.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div id=login class="text-center">
+	<form class="form-signin" method=post>
+		<img class="mb-4" src="/static/images/logo.png" alt="" width="72" height="72">
+		<h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+		<label for="inputUsername" class="sr-only">Username</label>
+		<input type="username" id="inputUsername" name=username class="form-control" placeholder="Username" required
+			autofocus>
+		<label for="inputPassword" class="sr-only">Password</label>
+		<input type="password" id="inputPassword" name=password class="form-control" placeholder="Password" required>
+		<div class="checkbox mb-3">
+			<label>
+				<input type="checkbox" value="remember-me"> Remember me
+			</label>
+		</div>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		{% if error %}
+		<div class="alert alert-danger">
+			<strong>Error!</strong> {{ error }}.
+		</div>
+		{% endif %}
+	</form>
+</div>
+{% endblock %}
