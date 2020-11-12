@@ -1,17 +1,21 @@
 #./app/app.py
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, session
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 from ejercicios import *
 import time
 
-p3 = True
+rank = []
 
 @app.route('/')
 @app.route('/index')
 def index():
-	return render_template('index.html')
+	if not 'urls' in session:
+		session['urls'] = []
+
+	rank = pags_visitadas()
+	return render_template('index.html', rank=rank)
 
 @app.route('/hello')
 def hello_world():
@@ -26,6 +30,8 @@ def hello_world():
 # Muestra una página para el ejercicio 2 de la Práctica 1
 @app.route('/ordena/<cadena>')
 def ordena(cadena):
+	rank = pags_visitadas()
+
 	lista = cadena.split(',')
 	lista = [int(i) for i in lista]
 
@@ -47,11 +53,14 @@ def ordena(cadena):
 			original =(' - ').join(lista), 
 			ordenada =(' - ').join(listaBurbuja),
 			burbuja = resBurbuja,
-			seleccion = resSeleccion)
+			seleccion = resSeleccion,
+			rank=rank)
 
 # Muestra una página para el ejercicio 3 de la Práctica 1
 @app.route('/criba/<num>')
 def cribaEratostenes(num):
+	rank = pags_visitadas()
+
 	if num.isdigit():
 		numerosPrimos = criba(int(num))
 		numerosPrimos = [str(i) for i in numerosPrimos]
@@ -61,11 +70,14 @@ def cribaEratostenes(num):
 
 	return render_template('ejercicios.html',
 			ejercicio = "Criba de Eratóstenes",
-			mensaje = msg)
+			mensaje = msg,
+			rank=rank)
 
 # Muestra una página para el ejercicio 4 de la Práctica 1
 @app.route('/fibonacci/<num>')
 def fibonacci(num):
+	rank = pags_visitadas()
+
 	if num.isdigit():
 		sucesion = sfibonacci(int(num))
 		msg = "El numero de la sucesión de Fibonacci en la posición " + num + " es: " + str(sucesion)
@@ -74,33 +86,46 @@ def fibonacci(num):
 	
 	return render_template('ejercicios.html',
 			ejercicio = "Sucesión de Fibonacci",
-			mensaje = msg)
+			mensaje = msg,
+			rank=rank)
 
 # Muestra una página para el ejercicio 5 de la Práctica 1
 @app.route('/balanceo/<cadena>')
 def balanceo(cadena):
+	rank = pags_visitadas()
+
 	return render_template('ejercicios.html',
 			ejercicio = "Balanceo",
-			mensaje = balanceada(cadena))
+			mensaje = balanceada(cadena),
+			rank=rank)
 
 # Muestra una página para el ejercicio 6 de la Práctica 1
 @app.route('/expresiones_regulares/palabraEspMayus/<cadena>')
 def erPalabraEspMayus(cadena):
+	rank = pags_visitadas()
+
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = palabraEspMayus(cadena))
+			mensaje = palabraEspMayus(cadena), 
+			rank=rank)
 
 @app.route('/expresiones_regulares/correo/<cadena>')
 def erCorreo(cadena):
+	rank = pags_visitadas()
+
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = correo(cadena))
+			mensaje = correo(cadena), 
+			rank=rank)
 
 @app.route('/expresiones_regulares/tarjeta/<cadena>')
 def erTarjeta(cadena):
+	rank = pags_visitadas()
+
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = tarjeta(cadena))
+			mensaje = tarjeta(cadena), 
+			rank=rank)
 
 # Muestra una página de error
 @app.errorhandler(404)
@@ -110,6 +135,8 @@ def error_404(error):
 # Crear Imágenes Dinámicas
 @app.route('/svg')
 def random_svg():
+	rank = pags_visitadas()
+
 	figuras=['circle', 'rect', 'ellipse']
 	colores=['red', 'green', 'blue', 'white', 'orange', 'violet', 'purple', 'yellow', 'fuchsia', 'snow', 'darkRed', 'coral', 'mediumPurple', 'orangeRed', 'navy', 'saddleBrown', 'cyan']
 
@@ -142,7 +169,7 @@ def random_svg():
 
 	fig=fig+' stroke='+color+' stroke-width=4 fill='+color_relleno
 
-	return render_template('svg.html', figura=fig)
+	return render_template('svg.html', figura=fig, rank=rank)
 
 #########################################################
 #														#
@@ -152,6 +179,8 @@ def random_svg():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+	rank = pags_visitadas()
+
 	error = None
 	if request.method == 'POST':
 		if request.form['username'] != 'admin' or \
@@ -159,4 +188,15 @@ def login():
 			error = 'Invalid Username or password'
 		else:
 			return redirect(url_for('index'))
-	return render_template('login.html', error=error)
+	return render_template('login.html', error=error, rank=rank)
+
+def pags_visitadas():
+	session['urls'].append(request.url)
+
+	if len(rank) >= 3:
+		del rank[0]
+
+	for url in session['urls']:
+		rank.append(url)
+
+	return rank

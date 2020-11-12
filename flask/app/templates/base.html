@@ -17,7 +17,7 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<a class="navbar-brand" href="/">
+		<a class="navbar-brand" href="/index">
 			<img src="/static/images/logo.png" width="33" height="33" alt="Logo" loading="lazy">
 		</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -44,9 +44,12 @@
 						<a class="dropdown-item" href="/criba/100">Ejercicio 3</a>
 						<a class="dropdown-item" href="/fibonacci/8">Ejercicio 4</a>
 						<a class="dropdown-item" href="/balanceo/[][][][][]">Ejercicio 5</a>
-						<a class="dropdown-item" href="/expresiones_regulares/palabraEspMayus/Apellido N">Ejercicio 6a</a>
-						<a class="dropdown-item" href="/expresiones_regulares/correo/usuario@correo.ugr.es">Ejercicio 6b</a>
-						<a class="dropdown-item" href="/expresiones_regulares/tarjeta/1234-1234-1234-1234">Ejercicio 6c</a>
+						<a class="dropdown-item" href="/expresiones_regulares/palabraEspMayus/Apellido N">Ejercicio
+							6a</a>
+						<a class="dropdown-item" href="/expresiones_regulares/correo/usuario@correo.ugr.es">Ejercicio
+							6b</a>
+						<a class="dropdown-item" href="/expresiones_regulares/tarjeta/1234-1234-1234-1234">Ejercicio
+							6c</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="/svg">SVG</a>
 					</div>
@@ -127,10 +130,13 @@
 			<nav id="sidebarMenuDer" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 				<div class="sidebar-sticky pt-3">
 					<ul class="nav flex-column">
-						<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+						<h6
+							class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
 							<span>Últimas páginas visitadas:</span>
-
 						</h6>
+						{% for url in rank %}
+						<li><a href={{url}}>{{url[22:]}}</a></li>
+						{% endfor %}
 					</ul>
 				</div>
 			</nav>
