@@ -134,7 +134,7 @@
 							class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
 							<span>Últimas páginas visitadas:</span>
 						</h6>
-						{% for url in rank %}
+						{% for url in rank|reverse %}
 						<li><a href={{url}}>{{url[22:]}}</a></li>
 						{% endfor %}
 					</ul>
