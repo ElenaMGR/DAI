@@ -4,9 +4,13 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 from ejercicios import *
+from model import *
+from controller import *
 import time
 
 rank = []
+usuarioAdmin = User('admin', '1234')
+newUser (usuarioAdmin)
 
 @app.route('/')
 @app.route('/index')
@@ -197,18 +201,24 @@ def login():
 
 	error = None
 	if request.method == 'POST':
-		if request.form['username'] != 'admin' or \
-				request.form['password'] != 'secret':
-			error = 'Invalid Username or password'
-		else:
-			session['username'] = request.form['username']
-
+		# if request.form['username'] != 'admin' or \
+		# 		request.form['password'] != 'secret':
+		# 	error = 'Invalid Username or password'
+		# else:
+		# 	session['username'] = request.form['username']
+		usuario = User(request.form['username'], request.form['password'])
+		if validateUser(usuario):
+			session['username'] = usuario.getUser()
 			# app.logger.info("Error: ")
 			# app.logger.info(request.form.getlist('remember'))
 			# if request.form.getlist('remember'):
 			# 	session['rememberUser'] = request.form['username']
 
 			return redirect(url_for('index'))
+
+		else:
+			error = 'Invalid Username or password'
+
 	return render_template('login.html',
 			error=error,
 			login=session['username'],
