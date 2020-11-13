@@ -14,8 +14,8 @@ def index():
 	if not 'urls' in session:
 		session['urls'] = []
 
-	rank = pags_visitadas()
-	return render_template('index.html', rank=rank)
+	pags_visitadas()
+	return render_template('index.html', rank=session['urls'])
 
 @app.route('/hello')
 def hello_world():
@@ -30,7 +30,7 @@ def hello_world():
 # Muestra una página para el ejercicio 2 de la Práctica 1
 @app.route('/ordena/<cadena>')
 def ordena(cadena):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	lista = cadena.split(',')
 	lista = [int(i) for i in lista]
@@ -54,12 +54,12 @@ def ordena(cadena):
 			ordenada =(' - ').join(listaBurbuja),
 			burbuja = resBurbuja,
 			seleccion = resSeleccion,
-			rank=rank)
+			rank=session['urls'])
 
 # Muestra una página para el ejercicio 3 de la Práctica 1
 @app.route('/criba/<num>')
 def cribaEratostenes(num):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	if num.isdigit():
 		numerosPrimos = criba(int(num))
@@ -71,12 +71,12 @@ def cribaEratostenes(num):
 	return render_template('ejercicios.html',
 			ejercicio = "Criba de Eratóstenes",
 			mensaje = msg,
-			rank=rank)
+			rank=session['urls'])
 
 # Muestra una página para el ejercicio 4 de la Práctica 1
 @app.route('/fibonacci/<num>')
 def fibonacci(num):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	if num.isdigit():
 		sucesion = sfibonacci(int(num))
@@ -87,45 +87,45 @@ def fibonacci(num):
 	return render_template('ejercicios.html',
 			ejercicio = "Sucesión de Fibonacci",
 			mensaje = msg,
-			rank=rank)
+			rank=session['urls'])
 
 # Muestra una página para el ejercicio 5 de la Práctica 1
 @app.route('/balanceo/<cadena>')
 def balanceo(cadena):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	return render_template('ejercicios.html',
 			ejercicio = "Balanceo",
 			mensaje = balanceada(cadena),
-			rank=rank)
+			rank=session['urls'])
 
 # Muestra una página para el ejercicio 6 de la Práctica 1
 @app.route('/expresiones_regulares/palabraEspMayus/<cadena>')
 def erPalabraEspMayus(cadena):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
 			mensaje = palabraEspMayus(cadena), 
-			rank=rank)
+			rank=session['urls'])
 
 @app.route('/expresiones_regulares/correo/<cadena>')
 def erCorreo(cadena):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
 			mensaje = correo(cadena), 
-			rank=rank)
+			rank=session['urls'])
 
 @app.route('/expresiones_regulares/tarjeta/<cadena>')
 def erTarjeta(cadena):
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
 			mensaje = tarjeta(cadena), 
-			rank=rank)
+			rank=session['urls'])
 
 # Muestra una página de error
 @app.errorhandler(404)
@@ -135,7 +135,7 @@ def error_404(error):
 # Crear Imágenes Dinámicas
 @app.route('/svg')
 def random_svg():
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	figuras=['circle', 'rect', 'ellipse']
 	colores=['red', 'green', 'blue', 'white', 'orange', 'violet', 'purple', 'yellow', 'fuchsia', 'snow', 'darkRed', 'coral', 'mediumPurple', 'orangeRed', 'navy', 'saddleBrown', 'cyan']
@@ -147,13 +147,13 @@ def random_svg():
 	fig=forma
 
 	if forma=='circle':
-		cx = random.randint(50, 600)
-		cy = random.randint(50, 600)
-		r = random.randint(30, 100)
+		cx = random.randint(50, 400)
+		cy = random.randint(50, 200)
+		r = random.randint(30, 160)
 		fig=fig+' cx='+str(cx)+' cy='+str(cy)+' r='+str(r)
 
 	elif forma=='rect':
-		x = random.randint(10, 350)
+		x = random.randint(10, 300)
 		y = random.randint(10, 150)
 		width = random.randint(50, 400)
 		height = random.randint(50, 400)
@@ -161,15 +161,15 @@ def random_svg():
 	
 	elif forma=='ellipse':
 		cx = random.randint(50, 300)
-		cy = random.randint(50, 300)
+		cy = random.randint(50, 150)
 		rx = random.randint(50, 300)
-		ry = random.randint(50, 300)
+		ry = random.randint(50, 150)
 		fig=fig+' cx='+str(cx)+' cy='+str(cy)+' rx='+str(rx)+' ry='+str(ry)
 
 
 	fig=fig+' stroke='+color+' stroke-width=4 fill='+color_relleno
 
-	return render_template('svg.html', figura=fig, rank=rank)
+	return render_template('svg.html', figura=fig, rank=session['urls'])
 
 #########################################################
 #														#
@@ -179,7 +179,7 @@ def random_svg():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-	rank = pags_visitadas()
+	pags_visitadas()
 
 	error = None
 	if request.method == 'POST':
@@ -188,15 +188,12 @@ def login():
 			error = 'Invalid Username or password'
 		else:
 			return redirect(url_for('index'))
-	return render_template('login.html', error=error, rank=rank)
+	return render_template('login.html', error=error, rank=session['urls'])
 
 def pags_visitadas():
-	session['urls'].append(request.url)
+	if not request.url in rank[-1:]:
+		if len(rank) >= 3:
+			del rank[0]
+		rank.append(request.url)
 
-	if len(rank) >= 3:
-		del rank[0]
-
-	for url in session['urls']:
-		rank.append(url)
-
-	return rank
+	session['urls'] = rank
