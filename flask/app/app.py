@@ -13,9 +13,13 @@ rank = []
 def index():
 	if not 'urls' in session:
 		session['urls'] = []
+	if not 'username' in session:
+		session['username'] = []
 
 	pags_visitadas()
-	return render_template('index.html', rank=session['urls'])
+	return render_template('index.html',
+	login=session['username'],
+	rank=session['urls'])
 
 @app.route('/hello')
 def hello_world():
@@ -50,10 +54,11 @@ def ordena(cadena):
 	#return cadenaFinal
 	lista = [str(i) for i in lista]
 	return render_template('ordena.html',
-			original =(' - ').join(lista), 
+			original =(' - ').join(lista),
 			ordenada =(' - ').join(listaBurbuja),
 			burbuja = resBurbuja,
 			seleccion = resSeleccion,
+			login=session['username'],
 			rank=session['urls'])
 
 # Muestra una página para el ejercicio 3 de la Práctica 1
@@ -71,6 +76,7 @@ def cribaEratostenes(num):
 	return render_template('ejercicios.html',
 			ejercicio = "Criba de Eratóstenes",
 			mensaje = msg,
+			login=session['username'],
 			rank=session['urls'])
 
 # Muestra una página para el ejercicio 4 de la Práctica 1
@@ -87,6 +93,7 @@ def fibonacci(num):
 	return render_template('ejercicios.html',
 			ejercicio = "Sucesión de Fibonacci",
 			mensaje = msg,
+			login=session['username'],
 			rank=session['urls'])
 
 # Muestra una página para el ejercicio 5 de la Práctica 1
@@ -97,6 +104,7 @@ def balanceo(cadena):
 	return render_template('ejercicios.html',
 			ejercicio = "Balanceo",
 			mensaje = balanceada(cadena),
+			login=session['username'],
 			rank=session['urls'])
 
 # Muestra una página para el ejercicio 6 de la Práctica 1
@@ -106,7 +114,8 @@ def erPalabraEspMayus(cadena):
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = palabraEspMayus(cadena), 
+			mensaje = palabraEspMayus(cadena),
+			login=session['username'],
 			rank=session['urls'])
 
 @app.route('/expresiones_regulares/correo/<cadena>')
@@ -115,7 +124,8 @@ def erCorreo(cadena):
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = correo(cadena), 
+			mensaje = correo(cadena),
+			login=session['username'],
 			rank=session['urls'])
 
 @app.route('/expresiones_regulares/tarjeta/<cadena>')
@@ -124,7 +134,8 @@ def erTarjeta(cadena):
 
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = tarjeta(cadena), 
+			mensaje = tarjeta(cadena),
+			login=session['username'],
 			rank=session['urls'])
 
 # Muestra una página de error
@@ -169,7 +180,10 @@ def random_svg():
 
 	fig=fig+' stroke='+color+' stroke-width=4 fill='+color_relleno
 
-	return render_template('svg.html', figura=fig, rank=session['urls'])
+	return render_template('svg.html',
+			figura=fig,
+			login=session['username'],
+			rank=session['urls'])
 
 #########################################################
 #														#
@@ -187,8 +201,30 @@ def login():
 				request.form['password'] != 'secret':
 			error = 'Invalid Username or password'
 		else:
+			session['username'] = request.form['username']
+
+			# app.logger.info("Error: ")
+			# app.logger.info(request.form.getlist('remember'))
+			# if request.form.getlist('remember'):
+			# 	session['rememberUser'] = request.form['username']
+
 			return redirect(url_for('index'))
-	return render_template('login.html', error=error, rank=session['urls'])
+	return render_template('login.html',
+			error=error,
+			login=session['username'],
+			rank=session['urls'])
+
+@app.route('/logout', methods=['GET'])
+def logout():
+	if 'username' in session:
+		session.pop('username', None)
+	
+	if not 'username' in session:
+		session['username'] = []
+
+	return render_template('index.html',
+			login=session['username'],
+			rank=session['urls'])
 
 def pags_visitadas():
 	if not request.url in rank[-1:]:
