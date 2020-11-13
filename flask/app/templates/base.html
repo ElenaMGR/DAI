@@ -135,7 +135,11 @@
 							<span>Últimas páginas visitadas:</span>
 						</h6>
 						{% for url in rank|reverse %}
-						<li><a href={{url}}>{{url[22:40]}}</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href={{url}}>
+								{{url[22:40]}}
+							</a>
+						</li>
 						{% endfor %}
 					</ul>
 				</div>
