@@ -7,10 +7,13 @@ from ejercicios import *
 from model import *
 from controller import *
 import time
+import random
 
 rank = []
-usuarioAdmin = User('admin', '1234')
-newUser (usuarioAdmin)
+# usuarioAdmin = User('admin', '1234')
+# newUser (usuarioAdmin)
+numeroAdivina = -1
+numeroIntentos = 0
 
 @app.route('/')
 @app.route('/index')
@@ -21,6 +24,7 @@ def index():
 		session['username'] = []
 
 	pags_visitadas()
+
 	return render_template('index.html',
 	login=session['username'],
 	rank=session['urls'])
@@ -294,6 +298,47 @@ def modify():
 			apellidos = usuario.getApellidos(),
 			email = usuario.getEmail(),
 			rank=session['urls'])
+
+@app.route('/adivina', methods=['GET', 'POST'])
+def adivina():
+	pags_visitadas()
+	global numeroAdivina
+	global numeroIntentos
+
+	mensaje = None
+	tipoAlert = "warning"
+
+	if numeroAdivina < 0:
+		numeroAdivina = random.randint(1,100)
+		numeroIntentos = 0
+	else:
+		numeroIntentos +=1
+
+	app.logger.info("Adivina: " + str(numeroAdivina))
+
+	if numeroIntentos < 10:
+		if request.method == 'POST':
+			num = int(request.form['adivinaNumero'])
+			if num > 100 or num < 1:
+				mensaje = "El número tiene que estar en el rango [1-100]."
+			elif num == numeroAdivina:
+				mensaje = "¡¡Enhorabuena!! ¡¡¡¡Valor encontrado!!!!"
+				tipoAlert = "success"
+				numeroAdivina = -1
+			elif num > numeroAdivina:
+				mensaje = "El número buscado es menor que " + str(num)
+			elif num < numeroAdivina:
+				mensaje = "El número buscado es mayor que " + str(num)
+	else:
+		tipoAlert = "danger"
+		mensaje = "¡Lo siento! No has conseguido adivinar el número tras 10 intentos. ¡El número era " + str(numeroAdivina) + "!"
+		numeroAdivina = -1
+
+	return render_template('adivina.html',
+			login=session['username'],
+			rank=session['urls'],
+			mensaje = mensaje,
+			tipoAlert = tipoAlert)
 
 def pags_visitadas():
 	if not request.url in rank[-1:]:
