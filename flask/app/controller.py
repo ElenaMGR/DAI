@@ -5,12 +5,12 @@ def newUser(usuario):
 	db = PickleShareDB('miBD')
 	db[usuario.getUser()] = {'pass': usuario.getPassword()}
 
-def newUserComplete(usuario):
+def upSetUser(usuario):
 	db = PickleShareDB('miBD')
-	db[usuario.getUser()] = {'pass': usuario.getPassword()}
-	db[usuario.getUser()] = {'nombre' : usuario.getNombre()}
-	db[usuario.getUser()] = {'apellidos' : usuario.getApellidos()}
-	db[usuario.getUser()] = {'email' : usuario.getEmail()}
+	db[usuario.getUser()] = {'pass': usuario.getPassword(), 
+	'nombre' : usuario.getNombre(),
+	'apellidos' : usuario.getApellidos(),
+	'email' : usuario.getEmail()}
 
 def validateUser(usuario):
 	db = PickleShareDB('miBD')
@@ -26,3 +26,12 @@ def existUser(usuario):
 		return True
 	else:
 		return False
+
+def getUserInfo(username):
+	db = PickleShareDB('miBD')
+	usuario = User(username, db[username].get('pass'))
+	usuario.setEmail(db[username].get('email'))
+	usuario.setNombre(db[username].get('nombre'))
+	usuario.setApellidos(db[username].get('apellidos'))
+
+	return usuario

@@ -6,6 +6,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 from ejercicios import *
 from model import *
 from controller import *
+from pickleshare import *
 import time
 
 rank = []
@@ -219,6 +220,9 @@ def login():
 		else:
 			error = 'Invalid Username or password'
 
+	db = PickleShareDB('miBD')
+	app.logger.info(db['Jose'])
+
 	return render_template('login.html',
 			error=error,
 			login=session['username'],
@@ -242,7 +246,7 @@ def signup():
 				usuario.setNombre(request.form['nombre'])
 				usuario.setApellidos(request.form['apellidos'])
 				usuario.setEmail(request.form['email'])
-				newUserComplete (usuario)
+				upSetUser (usuario)
 				session['username'] = usuario.getUser()
 				
 				return redirect(url_for('index'))
@@ -262,6 +266,39 @@ def logout():
 
 	return render_template('index.html',
 			login=session['username'],
+			rank=session['urls'])
+
+@app.route('/modify', methods=['GET', 'POST'])
+def modify():
+	pags_visitadas()
+
+	error = None
+
+	usuario = getUserInfo(session['username'])
+
+	# if request.method == 'POST':
+	# 	usuario = User(session['username'], request.form['password'])
+	# 	if existUser(usuario):
+	# 		error = 'Username already exists'
+	# 	else:
+	# 		if request.form['password'] != request.form['password2']:
+	# 			error = 'Passwords do not match'
+	# 		else:
+	# 			usuario.setPassword(request.form['password'])
+	# 			usuario.setNombre(request.form['nombre'])
+	# 			usuario.setApellidos(request.form['apellidos'])
+	# 			usuario.setEmail(request.form['email'])
+	# 			upSetUser (usuario)
+	# 			session['username'] = usuario.getUser()
+				
+	# 			return redirect(url_for('index'))
+
+	return render_template('modify.html',
+			error=error,
+			login=session['username'],
+			nombre = usuario.getNombre(),
+			apellidos = usuario.getApellidos(),
+			email = usuario.getEmail(),
 			rank=session['urls'])
 
 def pags_visitadas():
