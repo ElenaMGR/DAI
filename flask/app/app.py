@@ -224,6 +224,34 @@ def login():
 			login=session['username'],
 			rank=session['urls'])
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+	pags_visitadas()
+
+	error = None
+
+	if request.method == 'POST':
+		usuario = User(request.form['username'], request.form['password'])
+		if existUser(usuario):
+			error = 'Username already exists'
+		else:
+			if request.form['password'] != request.form['password2']:
+				error = 'Passwords do not match'
+			else:
+				usuario.setPassword(request.form['password'])
+				usuario.setNombre(request.form['nombre'])
+				usuario.setApellidos(request.form['apellidos'])
+				usuario.setEmail(request.form['email'])
+				newUserComplete (usuario)
+				session['username'] = usuario.getUser()
+				
+				return redirect(url_for('index'))
+
+	return render_template('signup.html',
+			error=error,
+			login=session['username'],
+			rank=session['urls'])
+
 @app.route('/logout', methods=['GET'])
 def logout():
 	if 'username' in session:

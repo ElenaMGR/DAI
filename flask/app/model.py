@@ -6,6 +6,9 @@ class User():
 		self.apellidos = ""
 		self.email = ""
 
+	def setPassword (self, password):
+		self.password = password
+
 	def setNombre (self, nombre):
 		self.nombre = nombre
 
