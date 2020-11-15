@@ -1,19 +1,20 @@
-{% extends "base.html" %}
-{% block title %}Ordenación de matrices{% endblock %}
-
-{% block html_head %}
-{% endblock %}
-
-{% block content %}
-<div class="m-5">
-	<h1></h1>
-	<h1>Ordenación de matrices</h1>
-	<h2>Matriz Original</h2>
-	<p>{{original}}</p>
-	<h2>Matriz Ordenada</h2>
-	<p>{{ordenada}}</p>
-	<h2>Tiempos de ejecución</h2>
-	<p>{{burbuja}}</p>
-	<p>{{seleccion}}</p>
-</div>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Ordenación de matrices</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	</head>
+	<body>
+		<div>
+			<h1>Ordenación de matrices</h1>
+			<h2>Matriz Original</h2>
+			<p>{{original}}</p>
+			<h2>Matriz Ordenada</h2>
+			<p>{{ordenada}}</p>
+			<h2>Tiempos de ejecución</h2>
+			<p>{{burbuja}}</p>
+			<p>{{seleccion}}</p>
+		</div>
+	</body>
+</html> 

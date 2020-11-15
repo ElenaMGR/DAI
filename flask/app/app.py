@@ -1,5 +1,5 @@
 #./app/app.py
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, flash
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -42,8 +42,6 @@ def hello_world():
 # Muestra una página para el ejercicio 2 de la Práctica 1
 @app.route('/ordena/<cadena>')
 def ordena(cadena):
-	pags_visitadas()
-
 	lista = cadena.split(',')
 	lista = [int(i) for i in lista]
 
@@ -65,15 +63,11 @@ def ordena(cadena):
 			original =(' - ').join(lista),
 			ordenada =(' - ').join(listaBurbuja),
 			burbuja = resBurbuja,
-			seleccion = resSeleccion,
-			login=session['username'],
-			rank=session['urls'])
+			seleccion = resSeleccion)
 
 # Muestra una página para el ejercicio 3 de la Práctica 1
 @app.route('/criba/<num>')
 def cribaEratostenes(num):
-	pags_visitadas()
-
 	if num.isdigit():
 		numerosPrimos = criba(int(num))
 		numerosPrimos = [str(i) for i in numerosPrimos]
@@ -83,15 +77,11 @@ def cribaEratostenes(num):
 
 	return render_template('ejercicios.html',
 			ejercicio = "Criba de Eratóstenes",
-			mensaje = msg,
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = msg)
 
 # Muestra una página para el ejercicio 4 de la Práctica 1
 @app.route('/fibonacci/<num>')
 def fibonacci(num):
-	pags_visitadas()
-
 	if num.isdigit():
 		sucesion = sfibonacci(int(num))
 		msg = "El numero de la sucesión de Fibonacci en la posición " + num + " es: " + str(sucesion)
@@ -100,51 +90,33 @@ def fibonacci(num):
 	
 	return render_template('ejercicios.html',
 			ejercicio = "Sucesión de Fibonacci",
-			mensaje = msg,
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = msg)
 
 # Muestra una página para el ejercicio 5 de la Práctica 1
 @app.route('/balanceo/<cadena>')
 def balanceo(cadena):
-	pags_visitadas()
-
 	return render_template('ejercicios.html',
 			ejercicio = "Balanceo",
-			mensaje = balanceada(cadena),
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = balanceada(cadena))
 
 # Muestra una página para el ejercicio 6 de la Práctica 1
 @app.route('/expresiones_regulares/palabraEspMayus/<cadena>')
 def erPalabraEspMayus(cadena):
-	pags_visitadas()
-
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = palabraEspMayus(cadena),
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = palabraEspMayus(cadena))
 
 @app.route('/expresiones_regulares/correo/<cadena>')
 def erCorreo(cadena):
-	pags_visitadas()
-
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = correo(cadena),
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = correo(cadena))
 
 @app.route('/expresiones_regulares/tarjeta/<cadena>')
 def erTarjeta(cadena):
-	pags_visitadas()
-
 	return render_template('ejercicios.html',
 			ejercicio = "Expresiones regulares",
-			mensaje = tarjeta(cadena),
-			login=session['username'],
-			rank=session['urls'])
+			mensaje = tarjeta(cadena))
 
 # Muestra una página de error
 @app.errorhandler(404)
@@ -217,7 +189,7 @@ def login():
 			# app.logger.info(request.form.getlist('remember'))
 			# if request.form.getlist('remember'):
 			# 	session['rememberUser'] = request.form['username']
-
+			flash('You were successfully logged in')
 			return redirect(url_for('index'))
 
 		else:
@@ -301,10 +273,14 @@ def modify():
 
 @app.route('/adivina', methods=['GET', 'POST'])
 def adivina():
-	pags_visitadas()
 	global numeroAdivina
 	global numeroIntentos
 
+	if session['urls'][-1][22:40] != 'adivina':
+		numeroAdivina = -1
+
+	pags_visitadas()
+	
 	mensaje = None
 	tipoAlert = "warning"
 
@@ -347,3 +323,157 @@ def pags_visitadas():
 		rank.append(request.url)
 
 	session['urls'] = rank
+
+# Muestra una página para el ejercicio 3 de la Práctica 1
+@app.route('/criba', methods=['GET', 'POST'])
+def cribaEratostenesP3():
+	pags_visitadas()
+	msg = None
+
+	if request.method == 'POST':
+		num = int(request.form['valorEjer'])
+		numerosPrimos = criba(num)
+		numerosPrimos = [str(i) for i in numerosPrimos]
+		msg = "Números primos hasta " + str(num) + ": " + (', ').join(numerosPrimos)
+
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Criba de Eratóstenes",
+			tipoInput = "number",
+			mensaje = msg,
+			enunciado = "Introduce un número",
+			login=session['username'],
+			rank=session['urls'])
+
+# Muestra una página para el ejercicio 4 de la Práctica 1
+@app.route('/fibonacci', methods=['GET', 'POST'])
+def fibonacciP3():
+	pags_visitadas()
+	msg = None
+
+	if request.method == 'POST':
+		num = int(request.form['valorEjer'])
+		sucesion = sfibonacci(num)
+		msg = "El numero de la sucesión de Fibonacci en la posición " + str(num) + " es: " + str(sucesion)
+	
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Sucesión de Fibonacci",
+			tipoInput = "number",
+			enunciado = "Introduce un número",
+			mensaje = msg,
+			login=session['username'],
+			rank=session['urls'])
+
+# Muestra una página para el ejercicio 5 de la Práctica 1
+@app.route('/balanceo', methods=['GET', 'POST'])
+def balanceoP3():
+	pags_visitadas()
+	mensaje = None
+
+	if request.method == 'POST':
+		cadena = request.form['valorEjer']
+		mensaje = balanceada(cadena)
+
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Balanceo",
+			tipoInput = "text",
+			enunciado = "Introduce una cadena",
+			mensaje = mensaje,
+			login=session['username'],
+			rank=session['urls'])
+
+# Muestra una página para el ejercicio 6 de la Práctica 1
+@app.route('/expresiones_regulares/palabraEspMayus', methods=['GET', 'POST'])
+def erPalabraEspMayusP3():
+	pags_visitadas()
+	mensaje = None
+
+	if request.method == 'POST':
+		cadena = request.form['valorEjer']
+		mensaje = palabraEspMayus(cadena)
+
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Expresiones regulares",
+			tipoInput = "text",
+			mensaje = mensaje,
+			enunciado = "Introduce una palabra",
+			login=session['username'],
+			rank=session['urls'])
+
+@app.route('/expresiones_regulares/correo', methods=['GET', 'POST'])
+def erCorreoP3():
+	pags_visitadas()
+	mensaje = None
+
+	if request.method == 'POST':
+		cadena = request.form['valorEjer']
+		mensaje = correo(cadena)
+
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Expresiones regulares",
+			tipoInput = "text",
+			enunciado = "Introduce un correo",
+			mensaje = mensaje,
+			login=session['username'],
+			rank=session['urls'])
+
+@app.route('/expresiones_regulares/tarjeta', methods=['GET', 'POST'])
+def erTarjetaP3():
+	pags_visitadas()
+	mensaje = None
+
+	if request.method == 'POST':
+		cadena = request.form['valorEjer']
+		mensaje = tarjeta(cadena)
+
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Expresiones regulares",
+			tipoInput = "text",
+			enunciado = "Introduce un número de tarjeta",
+			mensaje = mensaje,
+			login=session['username'],
+			rank=session['urls'])
+
+# Muestra una página para el ejercicio 2 de la Práctica 1
+@app.route('/ordena', methods=['GET', 'POST'])
+def ordenaP3():
+	pags_visitadas()
+	mensaje = None
+	original = None
+	ordenada = None
+	error = None
+	lista = []
+
+	if request.method == 'POST':
+		cadena = request.form['valorEjer']
+
+		lista = cadena.split(',')
+		lista = [int(i) for i in lista]
+
+		inicio = time.time()
+		listaBurbuja=burbuja(lista[:])
+		fin = time.time()
+		listaBurbuja = [str(i) for i in listaBurbuja]
+		resBurbuja = "Burbuja ha tardado: " + str(fin - inicio) + " segundos. "
+
+		inicio = time.time()
+		listaSeleccion=seleccion(lista[:])
+		fin = time.time()
+		listaSeleccion = [str(i) for i in listaSeleccion]
+		resSeleccion = "Selección ha tardado: " + str(fin - inicio) + " segundos. "
+
+		ordenada =(' - ').join(listaBurbuja)
+
+		mensaje = "Matriz Ordenada: "  + ordenada
+		error = "Tiempos de ejecución: " + resBurbuja + resSeleccion
+
+	#return cadenaFinal
+	lista = [str(i) for i in lista]
+	return render_template('ejerciciosP3.html',
+			ejercicio = "Ordenación de matrices",
+			enunciado = "Introduce números separados por ,",
+			tipoInput = "text",
+			mensaje = mensaje,
+			error = error,
+			tipoAlert = 'warning',
+			login=session['username'],
+			rank=session['urls'])

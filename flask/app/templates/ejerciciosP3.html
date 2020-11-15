@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Ejercicios{% endblock %}
+
+{% block html_head %}
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+	<form class="form-ejercicios" method=post>
+		<h1 class="h3 font-weight-normal my-5">{{ejercicio}}</h1>
+
+		<div class="form-group row my-3">
+			<label for="inputText" class="col-sm-3 col-form-label">{{enunciado}}</label>
+			<div class="col-sm-9">
+				<input type="{{tipoInput}}" class="form-control" name=valorEjer placeholder="{{ejemplo}}" required autofocus>
+			</div>
+		</div>
+
+		<button class="btn btn-lg btn-primary mt-5" type="submit">Comprobar</button>
+
+		{% if mensaje %}
+		<h1 class="h5 font-weight-normal my-5 text-left">{{mensaje}}</h1>
+		{% endif %}
+
+		{% if error %}
+		<div class="alert alert-danger text-center my-5">
+			{{ error }}.
+		</div>
+		{% endif %}
+	</form>
+</div>
+{% endblock %}

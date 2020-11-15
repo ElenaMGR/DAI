@@ -10,5 +10,14 @@
 	<div>
 		<img src=/static/images/portada.png>
 	</div>
+	{% with messages = get_flashed_messages() %}
+	{% if messages %}
+	<ul class="flashes my-5">
+		{% for message in messages %}
+		<li>{{ message }}</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
 </div>
 {% endblock %}
