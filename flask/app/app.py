@@ -531,6 +531,7 @@ def practica4():
 			rank=session['urls'])
 
 
+# Añadir nuevo item a la base de datos
 @app.route('/newBD', methods=['GET', 'POST'])
 def newBD():
 	pags_visitadas()
@@ -556,7 +557,7 @@ def newBD():
 			login=session['username'],
 			rank=session['urls'])
 
-
+# Modificar base de datos
 @app.route('/updateBD', methods=['GET', 'POST'])
 def updateBD():
 	pags_visitadas()
@@ -599,3 +600,14 @@ def updateBD():
 			error=error,
 			login=session['username'],
 			rank=session['urls'])
+
+# Eliminar item de la base de datos
+@app.route('/deleteBD', methods=['POST'])
+def deleteBD():
+	if request.method == 'POST':
+		identify = request.form['id_ep']
+
+		if identify is not None:
+			db.samples_friends.delete_one({"_id": ObjectId(identify)})
+
+	return redirect(url_for('practica4'))
