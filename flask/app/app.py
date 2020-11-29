@@ -492,9 +492,21 @@ def ordenaP3():
 def practica4():
 	pags_visitadas()
 	mensaje = None
+	episodios = None
+
+	if request.method == 'POST':
+		# Si estamos haciendo una búsqueda
+		if request.form['search']:
+			busqueda = request.form['search']
+			busqueda = busqueda.capitalize()
+			app.logger.debug("Search: "+ busqueda)
+			busqueda = {'$regex': '.*'+ busqueda +'.*'}
+			episodios = db.samples_friends.find({"name": busqueda})
+
 
 	# Encontramos los documentos de la coleccion "samples_friends"
-	episodios = db.samples_friends.find() # devuelve un cursor(*), no una lista ni un iterador
+	if episodios is None:
+		episodios = db.samples_friends.find() # devuelve un cursor(*), no una lista ni un iterador
 
 	lista_episodios = []
 	for episodio in episodios:
@@ -507,10 +519,6 @@ def practica4():
 	# 		lista_cabeceras.append(cabecera)
 	# 		app.logger.debug("Cabeceras: " + str(cabecera))
 
-
-	if request.method == 'POST':
-		if request.form['search']:
-			app.logger.debug("Search: "+ request.form['search'])
 
 	# a los templates de Jinja hay que pasarle una lista, no el cursor
 
