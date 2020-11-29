@@ -9,6 +9,7 @@ from model import *
 from controller import *
 import time
 import random
+from bson import ObjectId
 
 rank = []
 # usuarioAdmin = User('admin', '1234')
@@ -499,7 +500,7 @@ def practica4():
 		if request.form['search']:
 			busqueda = request.form['search']
 			# busqueda = busqueda.capitalize()
-			app.logger.debug("Search: "+ busqueda)
+			# app.logger.debug("Search: "+ busqueda)
 			busqueda = {'$regex': '.*'+ busqueda +'.*'}
 			episodios = db.samples_friends.find({"name": busqueda})
 
@@ -510,10 +511,10 @@ def practica4():
 
 	lista_episodios = []
 	for episodio in episodios:
-		app.logger.debug(episodio) # salida consola
+		# app.logger.debug(episodio) # salida consola
 		lista_episodios.append(episodio)
 
-	lista_cabeceras = ['id','name','season','number','airdate','airtime','airstamp','runtime']
+	lista_cabeceras = ['name','season','number','airdate','airtime','airstamp','runtime']
 	# for cabecera in lista_episodios[0].keys():
 	# 	if not cabecera.startswith('_'):
 	# 		lista_cabeceras.append(cabecera)
@@ -540,12 +541,61 @@ def newBD():
 		name = request.form['nombre']
 		season = request.form['season']
 		number = request.form['numberEp']
+		airdate = request.form['airdate']
+		airtime = request.form['airtime']
+		airstamp = request.form['airstamp']
+		runtime = request.form['runtime']
 
-		db.samples_friends.insert_one({'name': name, 'season': season, 'number': number})
+		db.samples_friends.insert_one({'name': name, 'season': season, 'number': number,
+				'airdate': airdate, 'airtime': airtime, 'airstamp': airstamp, 'runtime': runtime})
 
 		return redirect(url_for('practica4'))
 
 	return render_template('newBD.html',
+			error=error,
+			login=session['username'],
+			rank=session['urls'])
+
+
+@app.route('/updateBD', methods=['GET', 'POST'])
+def updateBD():
+	pags_visitadas()
+
+	error = None
+
+	if request.method == 'GET':
+
+		identify = request.args.get('id_ep')
+
+		if identify is not None:
+
+			episodio = db.samples_friends.find_one({"_id": ObjectId(identify)})
+			app.logger.debug("Modificar: " + identify)
+
+
+	if request.method == 'POST':
+		
+		name = request.form['nombre']
+		season = request.form['season']
+		number = request.form['numberEp']
+		airdate = request.form['airdate']
+		airtime = request.form['airtime']
+		airstamp = request.form['airstamp']
+		runtime = request.form['runtime']
+
+		old_values = db.samples_friends.find_one({"_id": ObjectId(request.form['id_ep'])})
+		update = {"$set": {'name': name, 'season': season, 'number': number,
+				'airdate': airdate, 'airtime': airtime, 'airstamp': airstamp, 'runtime': runtime}}
+
+		result = db.samples_friends.update_one(old_values, update)
+
+		app.logger.debug("Actualizando... Encontrados: "+ str(result.matched_count))
+		app.logger.debug("Actualizando... Actualizados: "+ str(result.modified_count))
+
+		return redirect(url_for('practica4'))
+
+	return render_template('modifyBD.html',
+			episodio = episodio,
 			error=error,
 			login=session['username'],
 			rank=session['urls'])

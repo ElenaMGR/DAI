@@ -30,7 +30,6 @@
 		<tbody>
 			{% for episodio in episodios %}
 			<tr>
-				<td>{{episodio.id}}</td>
 				<td>{{episodio.name}}</td>
 				<td>{{episodio.season}}</td>
 				<td>{{episodio.number}}</td>
@@ -39,12 +38,14 @@
 				<td>{{episodio.airstamp}}</td>
 				<td>{{episodio.runtime}}</td>
 				<td>
-					<form action="modify_item" method="post">
+					<form action="updateBD" method="get">
 						<button type="submit" class="btn btn-warning m-1">
+							<input type="hidden" name="id_ep" value="{{ episodio['_id'] }}">
 							<img src="/static/images/modify.png" width="33" height="33" alt="Modify" loading="lazy"
 								title="Modify">
 						</button></form>
-					<form action="delete_item" method="post">
+					<form action="deleteBD" method="post">
+						<input type="hidden" name="id_ep" value="{{ episodio['_id'] }}">
 						<button type="submit" class="btn btn-danger m-1">
 							<img src="/static/images/delete.png" width="33" height="33" alt="Delete" loading="lazy"
 								title="Delete">
