@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Modify{% endblock %}
+
+{% block html_head %}
+{% endblock %}
+
+{% block content %}
+<div id=modify class="text-center">
+	<form class="form-modify" method=post>
+		<h1 class="h3 my-5 font-weight-normal">New Episode</h1>
+
+
+		<div class="form-group row mr-3">
+			<label for="inputNombre" class="col-sm-2 col-form-label">Name</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name=nombre placeholder="Name" required autofocus>
+			</div>
+		</div>
+
+		<div class="form-group row mr-3">
+			<label for="inputSeason" class="col-sm-2 col-form-label">Season</label>
+			<div class="col-sm-10">
+				<input type="number" class="form-control" name=season placeholder="Season" required autofocus>
+			</div>
+		</div>
+		
+		<div class="form-group row mr-3">
+			<label for="inputSeason" class="col-sm-2 col-form-label">Number</label>
+			<div class="col-sm-10">
+				<input type="number" class="form-control" name=numberEp placeholder="Number" required autofocus>
+			</div>
+		</div>
+
+		<button class="btn btn-lg btn-primary mt-2" type="submit">New</button>
+		{% if error %}
+		<div class="alert alert-danger text-center mt-2">
+			<strong>Error!</strong> {{ error }}.
+		</div>
+		{% endif %}
+	</form>
+</div>
+{% endblock %}

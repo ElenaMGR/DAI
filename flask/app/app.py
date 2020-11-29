@@ -498,7 +498,7 @@ def practica4():
 		# Si estamos haciendo una búsqueda
 		if request.form['search']:
 			busqueda = request.form['search']
-			busqueda = busqueda.capitalize()
+			# busqueda = busqueda.capitalize()
 			app.logger.debug("Search: "+ busqueda)
 			busqueda = {'$regex': '.*'+ busqueda +'.*'}
 			episodios = db.samples_friends.find({"name": busqueda})
@@ -526,5 +526,26 @@ def practica4():
 			episodios=lista_episodios,
 			cabeceras = lista_cabeceras,
 			mensaje = mensaje,
+			login=session['username'],
+			rank=session['urls'])
+
+
+@app.route('/newBD', methods=['GET', 'POST'])
+def newBD():
+	pags_visitadas()
+
+	error = None
+
+	if request.method == 'POST':
+		name = request.form['nombre']
+		season = request.form['season']
+		number = request.form['numberEp']
+
+		db.samples_friends.insert_one({'name': name, 'season': season, 'number': number})
+
+		return redirect(url_for('practica4'))
+
+	return render_template('newBD.html',
+			error=error,
 			login=session['username'],
 			rank=session['urls'])
