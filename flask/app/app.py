@@ -1,5 +1,6 @@
 #./app/app.py
 from flask import Flask, render_template, redirect, url_for, request, session, flash
+from pymongo import MongoClient
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -14,6 +15,9 @@ rank = []
 # newUser (usuarioAdmin)
 numeroAdivina = -1
 numeroIntentos = 0
+
+client = MongoClient("mongo", 27017) # Conectar al servicio (docker) "mongo" en su puerto estandar
+db = client.SampleCollections        # Elegimos la base de datos de ejemplo
 
 @app.route('/')
 @app.route('/index')
@@ -475,5 +479,44 @@ def ordenaP3():
 			mensaje = mensaje,
 			error = error,
 			tipoAlert = 'warning',
+			login=session['username'],
+			rank=session['urls'])
+
+#########################################################
+#														#
+#					Práctica 4							#
+#														#
+#########################################################
+
+@app.route('/practica4', methods=['GET', 'POST'])
+def practica4():
+	pags_visitadas()
+	mensaje = None
+
+	# Encontramos los documentos de la coleccion "samples_friends"
+	episodios = db.samples_friends.find() # devuelve un cursor(*), no una lista ni un iterador
+
+	lista_episodios = []
+	for episodio in episodios:
+		app.logger.debug(episodio) # salida consola
+		lista_episodios.append(episodio)
+
+	lista_cabeceras = ['id','name','season','number','airdate','airtime','airstamp','runtime']
+	# for cabecera in lista_episodios[0].keys():
+	# 	if not cabecera.startswith('_'):
+	# 		lista_cabeceras.append(cabecera)
+	# 		app.logger.debug("Cabeceras: " + str(cabecera))
+
+
+	if request.method == 'POST':
+		if request.form['search']:
+			app.logger.debug("Search: "+ request.form['search'])
+
+	# a los templates de Jinja hay que pasarle una lista, no el cursor
+
+	return render_template('practica4.html',
+			episodios=lista_episodios,
+			cabeceras = lista_cabeceras,
+			mensaje = mensaje,
 			login=session['username'],
 			rank=session['urls'])

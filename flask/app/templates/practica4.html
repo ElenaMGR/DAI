@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+
+{% block html_head %}
+
+{% endblock %}
+
+{% block content %}
+
+<nav class="navbar navbar-light bg-light justify-content-between">
+	<form action="new_item" method="post">
+		<button class="btn btn-success my-2 my-sm-0" type="submit">New</button>
+	</form>
+	<form method="post" class="form-inline">
+		<input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search">
+		<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+	</form>
+</nav>
+
+<div class="table-responsive" style="height: 500px;">
+	<table id="table" class="table table-bordered table-hover table-sm">
+		<thead id="table-header" class="thead-light">
+			<tr>
+				{% for cabecera in cabeceras %}
+				<th scope="col">{{cabecera}}</th>
+				{% endfor %}
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for episodio in episodios %}
+			<tr>
+				<td>{{episodio.id}}</td>
+				<td>{{episodio.name}}</td>
+				<td>{{episodio.season}}</td>
+				<td>{{episodio.number}}</td>
+				<td>{{episodio.airdate}}</td>
+				<td>{{episodio.airtime}}</td>
+				<td>{{episodio.airstamp}}</td>
+				<td>{{episodio.runtime}}</td>
+				<td>
+					<form action="modify_item" method="post">
+						<button type="submit" class="btn btn-warning m-1">
+							<img src="/static/images/modify.png" width="33" height="33" alt="Modify" loading="lazy"
+								title="Modify">
+						</button></form>
+					<form action="delete_item" method="post">
+						<button type="submit" class="btn btn-danger m-1">
+							<img src="/static/images/delete.png" width="33" height="33" alt="Delete" loading="lazy"
+								title="Delete">
+						</button></form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
