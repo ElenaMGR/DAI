@@ -1,6 +1,7 @@
 #./app/app.py
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 from pymongo import MongoClient
+from bson import ObjectId
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -9,7 +10,6 @@ from model import *
 from controller import *
 import time
 import random
-from bson import ObjectId
 
 rank = []
 # usuarioAdmin = User('admin', '1234')
@@ -611,3 +611,136 @@ def deleteBD():
 			db.samples_friends.delete_one({"_id": ObjectId(identify)})
 
 	return redirect(url_for('practica4'))
+
+#########################################################
+#														#
+#					Práctica 5							#
+#														#
+#########################################################
+
+# para devolver una lista (GET), o añadir (POST)
+@app.route('/api/movies', methods=['GET', 'POST'])
+def api_1():
+	if request.method == 'GET':
+		# Búsqueda por argumentos
+		if request.args:
+			lista = []
+			if 'year' in request.args:
+				movies = db.video_movies.find({"year": request.args['year']})
+				for movie in movies:
+					lista.append({
+						'id':    str(movie.get('_id')), # pasa a string el ObjectId
+						'title': movie.get('title'), 
+						'year':  movie.get('year'),
+						'imdb':  movie.get('imdb')
+						})
+				if len(lista) == 0:
+					return jsonify({'error':'Not found movie with year ' + request.args['year']}), 404
+				else: 
+					return jsonify(lista)
+			elif 'title' in request. args:
+				titulo = {'$regex': '.*'+ request.args['title'] +'.*'}
+				movies = db.video_movies.find({"title": titulo})
+				for movie in movies:
+					lista.append({
+						'id':    str(movie.get('_id')), # pasa a string el ObjectId
+						'title': movie.get('title'), 
+						'year':  movie.get('year'),
+						'imdb':  movie.get('imdb')
+						})
+				if len(lista) == 0:
+					return jsonify({'error':'Not found movie with title ' + request.args['title']}), 404
+				else: 
+					return jsonify(lista)
+			elif 'imdb' in request. args:
+				movies = db.video_movies.find({"imdb": request.args['imdb']})
+				for movie in movies:
+					lista.append({
+						'id':    str(movie.get('_id')), # pasa a string el ObjectId
+						'title': movie.get('title'), 
+						'year':  movie.get('year'),
+						'imdb':  movie.get('imdb')
+						})
+				if len(lista) == 0:
+					return jsonify({'error':'Not found movie with imdb ' + request.args['imdb']}), 404
+				else: 
+					return jsonify(lista)
+		else:
+			lista = []
+			movies = db.video_movies.find().sort('year')
+			for movie in movies:
+				lista.append({
+					'id':    str(movie.get('_id')), # pasa a string el ObjectId
+					'title': movie.get('title'), 
+					'year':  movie.get('year'),
+					'imdb':  movie.get('imdb')
+					})
+			return jsonify(lista)
+
+	if request.method == 'POST':
+		# app.logger.debug(request.json)
+		nuevo = {
+			'title': request.json['title'] if 'title' in request.json else '',
+			'year': request.json['year'] if 'year' in request.json else '',
+			'imdb': request.json['imdb'] if 'imdb' in request.json else ''
+		}
+
+		db.video_movies.insert_one(nuevo)
+		# app.logger.debug(nuevo)
+		nuevo['_id'] = str(nuevo['_id'])
+		return jsonify(nuevo)
+
+
+
+# para devolver una, modificar o borrar
+@app.route('/api/movies/<id>', methods=['GET', 'PUT', 'DELETE'])
+def api_2(id):
+	if request.method == 'GET':
+		try:
+			movie = db.video_movies.find_one({'_id':ObjectId(id)})
+			return jsonify({
+				'id':    id,
+				'title': movie.get('title'), 
+				'year':  movie.get('year'),
+				'imdb':  movie.get('imdb')
+			})
+		except:
+			return jsonify({'error':'Not found'}), 404
+
+	if request.method == 'PUT':
+		try:
+			movie = db.video_movies.find_one({'_id':ObjectId(id)})
+
+			update = {
+				'title': request.json['title'] if 'title' in request.json else movie['title'],
+				'year': request.json['year'] if 'year' in request.json else movie['year'],
+				'imdb': request.json['imdb'] if 'imdb' in request.json else movie['imdb']
+			}
+
+			result = db.video_movies.update_one(movie, {"$set": update})
+
+			if result is None:
+				return jsonify({'error':'Not Update'}), 419
+
+			else:
+				return jsonify({
+					'id':    id,
+					'title': update.get('title'), 
+					'year':  update.get('year'),
+					'imdb':  update.get('imdb')
+				})
+		except:
+			return jsonify({'error':'Not found'}), 404
+
+	if request.method == 'DELETE':
+		try:
+			result = db.video_movies.delete_one({'_id':ObjectId(id)})
+
+			if result is None:
+				return jsonify({'error':'Not Delete'}), 419
+			else:
+				return jsonify({
+					'id':    id
+				})
+		except:
+			return jsonify({'error':'Not found'}), 404
