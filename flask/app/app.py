@@ -2,8 +2,10 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 from pymongo import MongoClient
 from bson import ObjectId
+from flask_restful import reqparse, abort, Api, Resource
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+api = Api(app)
 
 from ejercicios import *
 from model import *
@@ -744,3 +746,136 @@ def api_2(id):
 				})
 		except:
 			return jsonify({'error':'Not found'}), 404
+
+#########################################################
+#														#
+#					Práctica 5							#
+#	versión del api usando la librería flask-restfull	#
+#########################################################
+
+parser = reqparse.RequestParser()
+parser.add_argument('title', type=str, help="Title of the movie")
+parser.add_argument('year', type=int, help="Year of the movie")
+parser.add_argument('imdb', type=str, help="Id of the movie in IMDB")
+
+class MovieList(Resource):
+	def get(self, data=''):
+		args = parser.parse_args()
+		lista = []
+		if args['title']:
+			titulo = {'$regex': '.*'+ args['title'] +'.*'}
+			movies = db.video_movies.find({"title": titulo})
+			for movie in movies:
+				lista.append({
+					'id':    str(movie.get('_id')), # pasa a string el ObjectId
+					'title': movie.get('title'), 
+					'year':  movie.get('year'),
+					'imdb':  movie.get('imdb')
+					})
+			if len(lista) == 0:
+				abort(404, message='Not found movie with title ' + args['title'])
+			else: 
+				return jsonify(lista)
+		elif args['year']:
+				movies = db.video_movies.find({"year": args['year']})
+				for movie in movies:
+					lista.append({
+						'id':    str(movie.get('_id')), # pasa a string el ObjectId
+						'title': movie.get('title'), 
+						'year':  movie.get('year'),
+						'imdb':  movie.get('imdb')
+						})
+				if len(lista) == 0:
+					abort(404, message='Not found movie with year ' + str(args['year']))
+				else: 
+					return jsonify(lista)
+		elif args['imdb']:
+				movies = db.video_movies.find({"imdb": args['imdb']})
+				for movie in movies:
+					lista.append({
+						'id':    str(movie.get('_id')), # pasa a string el ObjectId
+						'title': movie.get('title'), 
+						'year':  movie.get('year'),
+						'imdb':  movie.get('imdb')
+						})
+				if len(lista) == 0:
+					abort(404, message='Not found movie with imdb ' + args['imdb'])
+				else: 
+					return jsonify(lista)
+		else:
+			movies = db.video_movies.find().sort('year')
+			for movie in movies:
+				lista.append({
+					'id':    str(movie.get('_id')), # pasa a string el ObjectId
+					'title': movie.get('title'), 
+					'year':  movie.get('year'),
+					'imdb':  movie.get('imdb')
+					})
+			return jsonify(lista)
+
+	def post(self):
+		args = parser.parse_args()
+		db.video_movies.insert_one(args)
+		app.logger.debug(args)
+		args['_id'] = str(args['_id'])
+		return args, 201
+
+class Movie(Resource):
+	def get(self, id):
+		movie = db.video_movies.find_one({'_id':ObjectId(id)})
+
+		if not movie:
+			abort(404, message="Could not find video with that id")
+
+		return jsonify({
+			'id':    id,
+			'title': movie.get('title'), 
+			'year':  movie.get('year'),
+			'imdb':  movie.get('imdb')
+		})
+
+	def delete(self, id):
+		try:
+			result = db.video_movies.delete_one({'_id':ObjectId(id)})
+
+			if not result:
+				abort(404, message="Could not delete video with that id")
+			else:
+				return jsonify({
+					'id':    id
+				})
+		except:
+			abort(404, message="Could not find video with that id")
+
+
+	def put(self, id):
+		args = parser.parse_args()
+		try:
+			movie = db.video_movies.find_one({'_id':ObjectId(id)})
+
+			update = {
+				'title': args['title'] if args['title'] else movie['title'],
+				'year': args['year'] if args['year'] else movie['year'],
+				'imdb': args['imdb'] if args['imdb'] else movie['imdb']
+			}
+
+			app.logger.debug(args['title'])
+
+			result = db.video_movies.update_one(movie, {"$set": update})
+
+			if result is None:
+				abort(404, message="Could not update video with that id")
+
+			else:
+				return jsonify({
+					'id':    id,
+					'title': update.get('title'), 
+					'year':  update.get('year'),
+					'imdb':  update.get('imdb')
+				})
+		except:
+			abort(404, message="Could not find video with that id")
+
+
+api.add_resource(MovieList, "/api2/movies")
+api.add_resource(Movie, '/api2/movies/<id>')
