@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Libros{% endblock %}
+
+{% block html_head %}
+
+{% endblock %}
+
+{% block content %}
+
+<nav class="navbar navbar-light bg-light justify-content-between">
+	<form>
+		<a class="btn btn-success my-2 my-sm-0" role="button" href="/newBD">New</a>
+	</form>
+</nav>
+
+<div class="table-responsive" style="height: 500px;">
+	<table id="table" class="table table-bordered table-hover table-sm">
+		<thead id="table-header" class="thead-light">
+			<tr>
+				<th scope="col">Titulo</th>
+				<th scope="col">Autores</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% load static %}
+			{% for libro in libros %}
+			<tr>
+				<td>{{libro.titulo}}</td>
+				<td>
+					{% for autor in libro.autores.all %}
+					{{autor}} <br/>
+					{% endfor %}
+				</td>
+				<td>
+					<form action="updateBD" method="get">
+						<button type="submit" class="btn btn-warning m-1">
+							<input type="hidden" name="id_libro" value="{{ libro.pk }}">
+							<img src="{% static 'images/modify.png' %}" width="33" height="33" alt="Modify" loading="lazy"
+								title="Modify">
+						</button></form>
+					<form action="deleteBD" method="post">
+						<input type="hidden" name="id_libro" value="{{ libro.pk }}">
+						<button type="submit" class="btn btn-danger m-1">
+							<img src="{% static 'images/delete.png' %}" width="33" height="33" alt="Delete" loading="lazy"
+								title="Delete">
+						</button></form>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
