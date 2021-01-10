@@ -1,0 +1,19 @@
+div{
+	border: 1%;
+	padding: 1%;
+	margin: 2%;
+}
+
+h1, h2, h3, p{
+	color: white;
+}
+
+a{
+	color: blue;
+}
+
+body{
+	background: black;
+	display: flex;
+	flex-direction: column;
+}

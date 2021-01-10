@@ -11,6 +11,9 @@ django-startapp:
 	sudo docker-compose run web python manage.py startapp mi_aplicacion
 	sudo chown -R ${USER}:${USER} .
 
+django-makemigrations:
+	docker-compose run web python manage.py makemigrations
+
 django-migrate:
 	docker-compose run web python manage.py migrate
 
