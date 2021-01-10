@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -15,4 +15,5 @@ urlpatterns = [
 	path('addPrestamo', views.addPrestamo, name='addPrestamo'),
 	path('eliminarPrestamo', views.eliminarPrestamo, name='eliminarPrestamo'),
 	path('modificarPrestamo', views.modificarPrestamo, name='modificarPrestamo'),
+	path('accounts/', include('django.contrib.auth.urls')),
 ]

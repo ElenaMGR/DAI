@@ -1,6 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import Libro, Autor, Prestamo
 from .forms import LibroForm, AutorForm, PrestamoForm
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # def index(request):
@@ -8,7 +10,8 @@ from .forms import LibroForm, AutorForm, PrestamoForm
 
 def index(request):
 	# Aquí van la las variables para la plantilla
-	context = {}
+	user_activo = request.user.username
+	context = {'login': user_activo}
 	return render(request,'base.html', context)
 
 def mostrarLibros (request):
@@ -19,23 +22,26 @@ def mostrarLibros (request):
 	#	return render(request, 'libros_list.html', {'login': user_activo, 'libros': libros})
 
 	# else:
-
-	context= {'libros': libros}
+	user_activo = request.user.username
+	context= {'login': user_activo, 'libros': libros}
 	return render(request, 'libro.html', context)
 
 def mostrarAutores (request):
+	user_activo = request.user.username
 	autores = Autor.objects.all()
 
-	context= {'autores': autores}
+	context= {'login': user_activo, 'autores': autores}
 	return render(request, 'autor.html', context)
 
 def mostrarPrestamos (request):
+	user_activo = request.user.username
 	prestamos = Prestamo.objects.all()
 
-	context = {'prestamos': prestamos}
+	context = {'login': user_activo, 'prestamos': prestamos}
 	return render(request, 'prestamo.html', context)
 
 def addLibro (request):
+	user_activo = request.user.username
 	if request.method == 'POST':
 		form = LibroForm(request.POST)
 
@@ -46,7 +52,7 @@ def addLibro (request):
 	else:
 		form = LibroForm()
 
-	context = { 'form': form }
+	context = {'login': user_activo, 'form': form }
 
 	return render(request, 'addLibro.html', context)
 
@@ -55,6 +61,7 @@ def eliminarLibro (request):
 	return redirect('mostrarLibros')
 
 def modificarLibro (request):
+	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
 		form = LibroForm(request.POST)
 
@@ -70,10 +77,11 @@ def modificarLibro (request):
 		libro = Libro.objects.get(pk=pk)
 		data = {'titulo': libro.titulo, 'autores': libro.autores.all()}
 		form = LibroForm(data)
-		context = { 'form': form , 'pk_libro' : pk}
+		context = {'login': user_activo, 'form': form , 'pk_libro' : pk}
 		return render(request, 'modificarLibro.html', context)
 
 def addAutor (request):
+	user_activo = request.user.username
 	if request.method == 'POST':
 		form = AutorForm(request.POST)
 
@@ -84,15 +92,17 @@ def addAutor (request):
 	else:
 		form = AutorForm()
 
-	context = { 'form': form }
+	context = {'login': user_activo, 'form': form }
 
 	return render(request, 'addAutor.html', context)
 
 def eliminarAutor (request):
+	user_activo = request.user.username
 	Autor.objects.filter(pk=request.POST.get('pk_autor')).delete()
 	return redirect('mostrarAutores')
 
 def modificarAutor (request):
+	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
 		Autor.objects.filter(pk=request.POST.get('pk_autor')).update(nombre=request.POST.get('nombre'), apellidos=request.POST.get('apellidos'))
 
@@ -103,10 +113,11 @@ def modificarAutor (request):
 		autor = Autor.objects.get(pk=pk)
 		data = {'nombre': autor.nombre, 'apellidos': autor.apellidos}
 		form = AutorForm(data)
-		context = { 'form': form , 'pk_autor' : pk}
+		context = {'login': user_activo, 'form': form , 'pk_autor' : pk}
 		return render(request, 'modificarAutor.html', context)
 
 def addPrestamo (request):
+	user_activo = request.user.username
 	if request.method == 'POST':
 		form = PrestamoForm(request.POST)
 
@@ -117,15 +128,17 @@ def addPrestamo (request):
 	else:
 		form = PrestamoForm()
 
-	context = { 'form': form }
+	context = {'login': user_activo, 'form': form }
 
 	return render(request, 'addPrestamo.html', context)
 
 def eliminarPrestamo (request):
+	user_activo = request.user.username
 	Prestamo.objects.filter(pk=request.POST.get('pk_prestamo')).delete()
 	return redirect('mostrarPrestamos')
 
 def modificarPrestamo (request):
+	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
 		Prestamo.objects.filter(pk=request.POST.get('pk_prestamo')).update(libro=request.POST.get('libro'), fecha=request.POST.get('fecha'), usuario=request.POST.get('usuario'))
 
@@ -136,5 +149,5 @@ def modificarPrestamo (request):
 		prestamo = Prestamo.objects.get(pk=pk)
 		data = {'libro': prestamo.libro, 'fecha': prestamo.fecha, 'usuario': prestamo.usuario}
 		form = PrestamoForm(data)
-		context = { 'form': form , 'pk_prestamo' : pk}
+		context = {'login': user_activo, 'form': form , 'pk_prestamo' : pk}
 		return render(request, 'modificarPrestamo.html', context)
