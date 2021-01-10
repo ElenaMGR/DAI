@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Añadir Autor{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="p-5">
+<h2>Añade un nuevo autor</h2>
+<form method="POST">
+	{% csrf_token %}
+	<div class="form-row">
+		<div class="form-group col-md-6 mb-0">
+			{{ form.nombre|as_crispy_field }}
+		</div>
+	</div>
+
+	<div class="form-row">
+		<div class="form-group col-md-6 mb-0">
+			{{ form.apellidos|as_crispy_field }}
+		</div>
+	</div>
+
+	<button class="btn btn-lg btn-primary mt-2" type="submit">Save</button>
+</form>
+</div>
+{% endblock %}

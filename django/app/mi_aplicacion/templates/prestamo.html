@@ -9,7 +9,7 @@
 
 <nav class="navbar navbar-light bg-light justify-content-between">
 	<form>
-		<a class="btn btn-success my-2 my-sm-0" role="button" href="/newBD">New</a>
+		<a class="btn btn-success my-2 my-sm-0" role="button" href="{% url 'addPrestamo' %}">New</a>
 	</form>
 </nav>
 
@@ -31,14 +31,16 @@
 				<td>{{prestamo.fecha}}</td>
 				<td>{{prestamo.usuario}}</td>
 				<td>
-					<form action="updateBD" method="get">
+					<form action="{% url 'modificarPrestamo' %}" method="post">
+						{% csrf_token %}
 						<button type="submit" class="btn btn-warning m-1">
-							<input type="hidden" name="id_prestamo" value="{{ prestamo.pk }}">
+							<input type="hidden" name="pk_prestamo" value="{{ prestamo.pk }}">
 							<img src="{% static 'images/modify.png' %}" width="33" height="33" alt="Modify" loading="lazy"
 								title="Modify">
 						</button></form>
-					<form action="deleteBD" method="post">
-						<input type="hidden" name="id_prestamo" value="{{ prestamo.pk }}">
+					<form action="{% url 'eliminarPrestamo' %}" method="post">
+						{% csrf_token %}
+						<input type="hidden" name="pk_prestamo" value="{{ prestamo.pk }}">
 						<button type="submit" class="btn btn-danger m-1">
 							<img src="{% static 'images/delete.png' %}" width="33" height="33" alt="Delete" loading="lazy"
 								title="Delete">

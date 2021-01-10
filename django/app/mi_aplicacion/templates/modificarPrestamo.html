@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Modificar préstamo{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="p-5">
+<h2>Modificar préstamo</h2>
+<form method="POST">
+	{% csrf_token %}
+	<div class="form-row">
+		<div class="form-group col-md-6 mb-0">
+			{{ form.libro|as_crispy_field }}
+		</div>
+	</div>
+
+	<div class="form-row">
+		<div class="form-group col-md-6 mb-0">
+			{{ form.fecha|as_crispy_field }}
+		</div>
+	</div>
+
+	<div class="form-row">
+		<div class="form-group col-md-6 mb-0">
+			{{ form.usuario|as_crispy_field }}
+		</div>
+	</div>
+
+	<input type="hidden" name="pk_prestamo" value="{{ pk_prestamo }}">
+	<input type="hidden" name="modificado" value="modificado">
+
+	<button class="btn btn-lg btn-primary mt-2" type="submit">Save</button>
+</form>
+</div>
+{% endblock %}
