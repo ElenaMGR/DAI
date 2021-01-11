@@ -42,7 +42,7 @@
 
 			<form class="form-inline my-2 my-lg-0">
 				{% if login %}
-				<a class="nav-link text-white" href="/modify">Welcome, {{ login }}</a>
+				<a class="nav-link text-white" href="">Welcome, {{ login }}</a>
 				<a class="btn btn-outline-primary" role="button" href="{% url 'logout' %}">Log out</a>
 				{% else %}
 				<a class="btn btn-outline-primary mr-2" role="button" href="{% url 'register' %}">Sign up</a>

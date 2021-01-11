@@ -9,7 +9,9 @@
 
 <nav class="navbar navbar-light bg-light justify-content-between">
 	<form>
+		{% if staff %}
 		<a class="btn btn-success my-2 my-sm-0" role="button" href="{% url 'addAutor' %}">New</a>
+		{% endif %}
 	</form>
 </nav>
 
@@ -19,7 +21,9 @@
 			<tr>
 				<th scope="col">Nombre</th>
 				<th scope="col">Apellidos</th>
+				{% if staff %}
 				<th scope="col">Actions</th>
+				{% endif %}
 			</tr>
 		</thead>
 		<tbody>
@@ -28,6 +32,7 @@
 			<tr>
 				<td>{{autor.nombre}}</td>
 				<td>{{autor.apellidos}}</td>
+				{% if staff %}
 				<td>
 					<form action="{% url 'modificarAutor' %}" method="post">
 						{% csrf_token %}
@@ -44,6 +49,7 @@
 								title="Delete">
 						</button></form>
 				</td>
+				{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>

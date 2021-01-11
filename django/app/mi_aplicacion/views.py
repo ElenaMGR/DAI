@@ -2,7 +2,9 @@ from django.shortcuts import render, HttpResponse, redirect
 from .models import Libro, Autor, Prestamo
 from .forms import LibroForm, AutorForm, PrestamoForm, RegisterForm
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+
+user_activo = ""
 
 # Create your views here.
 # def index(request):
@@ -23,16 +25,17 @@ def mostrarLibros (request):
 
 	# else:
 	user_activo = request.user.username
-	context= {'login': user_activo, 'libros': libros}
+	context= {'login': user_activo, 'libros': libros, 'staff': request.user.is_staff}
 	return render(request, 'libro.html', context)
 
 def mostrarAutores (request):
 	user_activo = request.user.username
 	autores = Autor.objects.all()
 
-	context= {'login': user_activo, 'autores': autores}
+	context= {'login': user_activo, 'autores': autores, 'staff': request.user.is_staff}
 	return render(request, 'autor.html', context)
 
+@login_required
 def mostrarPrestamos (request):
 	user_activo = request.user.username
 	prestamos = Prestamo.objects.all()
@@ -40,6 +43,8 @@ def mostrarPrestamos (request):
 	context = {'login': user_activo, 'prestamos': prestamos}
 	return render(request, 'prestamo.html', context)
 
+@login_required
+@permission_required('mi_aplicacion.libro.can_add_libro', login_url='mostrarLibros')
 def addLibro (request):
 	user_activo = request.user.username
 	if request.method == 'POST':
@@ -56,10 +61,14 @@ def addLibro (request):
 
 	return render(request, 'addLibro.html', context)
 
+@login_required
+@permission_required('mi_aplicacion.libro.can_delete_libro', login_url='mostrarLibros')
 def eliminarLibro (request):
 	Libro.objects.filter(pk=request.POST.get('pk_libro')).delete()
 	return redirect('mostrarLibros')
 
+@login_required
+@permission_required('mi_aplicacion.libro.can_change_libro', login_url='mostrarLibros')
 def modificarLibro (request):
 	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
@@ -80,6 +89,8 @@ def modificarLibro (request):
 		context = {'login': user_activo, 'form': form , 'pk_libro' : pk}
 		return render(request, 'modificarLibro.html', context)
 
+@login_required
+@permission_required('mi_aplicacion.autor.can_add_autor', login_url='mostrarAutores')
 def addAutor (request):
 	user_activo = request.user.username
 	if request.method == 'POST':
@@ -96,11 +107,15 @@ def addAutor (request):
 
 	return render(request, 'addAutor.html', context)
 
+@login_required
+@permission_required('mi_aplicacion.autor.can_delete_autor', login_url='mostrarAutores')
 def eliminarAutor (request):
 	user_activo = request.user.username
 	Autor.objects.filter(pk=request.POST.get('pk_autor')).delete()
 	return redirect('mostrarAutores')
 
+@login_required
+@permission_required('mi_aplicacion.autor.can_change_autor', login_url='mostrarAutores')
 def modificarAutor (request):
 	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
@@ -116,6 +131,7 @@ def modificarAutor (request):
 		context = {'login': user_activo, 'form': form , 'pk_autor' : pk}
 		return render(request, 'modificarAutor.html', context)
 
+@login_required
 def addPrestamo (request):
 	user_activo = request.user.username
 	if request.method == 'POST':
@@ -132,11 +148,13 @@ def addPrestamo (request):
 
 	return render(request, 'addPrestamo.html', context)
 
+@login_required
 def eliminarPrestamo (request):
 	user_activo = request.user.username
 	Prestamo.objects.filter(pk=request.POST.get('pk_prestamo')).delete()
 	return redirect('mostrarPrestamos')
 
+@login_required
 def modificarPrestamo (request):
 	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
