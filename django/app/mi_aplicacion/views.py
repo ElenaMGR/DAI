@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import Libro, Autor, Prestamo
-from .forms import LibroForm, AutorForm, PrestamoForm
+from .forms import LibroForm, AutorForm, PrestamoForm, RegisterForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -151,3 +151,17 @@ def modificarPrestamo (request):
 		form = PrestamoForm(data)
 		context = {'login': user_activo, 'form': form , 'pk_prestamo' : pk}
 		return render(request, 'modificarPrestamo.html', context)
+
+def register(response):
+	if response.method == "POST":
+		form = RegisterForm(response.POST)
+		if form.is_valid():
+			form.save()
+
+		return redirect("login")
+	else:
+		form = RegisterForm()
+
+	context = {'form': form }
+
+	return render(response, "registration/register.html", context)

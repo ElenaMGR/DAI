@@ -16,4 +16,5 @@ urlpatterns = [
 	path('eliminarPrestamo', views.eliminarPrestamo, name='eliminarPrestamo'),
 	path('modificarPrestamo', views.modificarPrestamo, name='modificarPrestamo'),
 	path('accounts/', include('django.contrib.auth.urls')),
+	path("register/", views.register, name="register"), 
 ]
