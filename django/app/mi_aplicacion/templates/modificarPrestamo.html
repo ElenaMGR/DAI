@@ -20,11 +20,13 @@
 		</div>
 	</div>
 
+	{% if staff %}
 	<div class="form-row">
 		<div class="form-group col-md-6 mb-0">
 			{{ form.usuario|as_crispy_field }}
 		</div>
 	</div>
+	{% endif %}
 
 	<input type="hidden" name="pk_prestamo" value="{{ pk_prestamo }}">
 	<input type="hidden" name="modificado" value="modificado">

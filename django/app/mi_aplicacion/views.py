@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 from .models import Libro, Autor, Prestamo
-from .forms import LibroForm, AutorForm, PrestamoForm, RegisterForm
+from .forms import LibroForm, AutorForm, PrestamoForm, PrestamoStaffForm, RegisterForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 
@@ -38,7 +38,10 @@ def mostrarAutores (request):
 @login_required
 def mostrarPrestamos (request):
 	user_activo = request.user.username
-	prestamos = Prestamo.objects.all()
+	if request.user.is_staff:
+		prestamos = Prestamo.objects.all()
+	else:
+		prestamos = Prestamo.objects.filter(usuario=request.user)
 
 	context = {'login': user_activo, 'prestamos': prestamos}
 	return render(request, 'prestamo.html', context)
@@ -135,16 +138,26 @@ def modificarAutor (request):
 def addPrestamo (request):
 	user_activo = request.user.username
 	if request.method == 'POST':
-		form = PrestamoForm(request.POST)
-
-		if form.is_valid():
-			form.save()
-			return redirect('mostrarPrestamos')
+		if request.user.is_staff:
+			form = PrestamoStaffForm(request.POST)
+			if form.is_valid():
+				form.save()
+				return redirect('mostrarPrestamos')
+		else:
+			form = PrestamoForm(request.POST)
+			if form.is_valid():
+				prestamo = form.save(commit=False)
+				prestamo.usuario=request.user
+				prestamo.save()
+				return redirect('mostrarPrestamos')
 
 	else:
-		form = PrestamoForm()
+		if request.user.is_staff:
+			form = PrestamoStaffForm()
+		else:
+			form = PrestamoForm()
 
-	context = {'login': user_activo, 'form': form }
+	context = {'login': user_activo, 'form': form , 'staff': request.user.is_staff}
 
 	return render(request, 'addPrestamo.html', context)
 
@@ -158,16 +171,23 @@ def eliminarPrestamo (request):
 def modificarPrestamo (request):
 	user_activo = request.user.username
 	if request.method == 'POST' and 'modificado' in request.POST:
-		Prestamo.objects.filter(pk=request.POST.get('pk_prestamo')).update(libro=request.POST.get('libro'), fecha=request.POST.get('fecha'), usuario=request.POST.get('usuario'))
-
+		if request.user.is_staff:
+			usuario=request.POST.get('usuario')
+		else: 
+			usuario=request.user
+		Prestamo.objects.filter(pk=request.POST.get('pk_prestamo')).update(libro=request.POST.get('libro'), fecha=request.POST.get('fecha'), usuario=usuario)
 		return redirect('mostrarPrestamos')
 
 	else:
 		pk = request.POST.get('pk_prestamo')
 		prestamo = Prestamo.objects.get(pk=pk)
-		data = {'libro': prestamo.libro, 'fecha': prestamo.fecha, 'usuario': prestamo.usuario}
-		form = PrestamoForm(data)
-		context = {'login': user_activo, 'form': form , 'pk_prestamo' : pk}
+		if request.user.is_staff:
+			data = {'libro': prestamo.libro, 'fecha': prestamo.fecha, 'usuario': prestamo.usuario}
+			form = PrestamoStaffForm(data)
+		else:
+			data = {'libro': prestamo.libro, 'fecha': prestamo.fecha}
+			form = PrestamoForm(data)
+		context = {'login': user_activo, 'form': form , 'pk_prestamo' : pk, 'staff': request.user.is_staff}
 		return render(request, 'modificarPrestamo.html', context)
 
 def register(response):

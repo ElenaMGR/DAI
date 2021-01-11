@@ -20,11 +20,13 @@
 		</div>
 	</div>
 
+	{% if staff %}
 	<div class="form-row">
 		<div class="form-group col-md-6 mb-0">
 			{{ form.usuario|as_crispy_field }}
 		</div>
 	</div>
+	{% endif %}
 
 	<button class="btn btn-lg btn-primary mt-2" type="submit">Save</button>
 </form>

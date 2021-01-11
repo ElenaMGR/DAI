@@ -14,10 +14,18 @@ class AutorForm(forms.ModelForm):
 		model = Autor
 		fields = ('nombre', 'apellidos',)
 
-class PrestamoForm(forms.ModelForm):
+class PrestamoStaffForm(forms.ModelForm):
 	class Meta:
 		model = Prestamo
 		fields = ('libro', 'fecha', 'usuario',)
+		widgets = {
+			'fecha': forms.DateInput(attrs={'type':'date'})
+		}
+
+class PrestamoForm(forms.ModelForm):
+	class Meta:
+		model = Prestamo
+		fields = ('libro', 'fecha',)
 		widgets = {
 			'fecha': forms.DateInput(attrs={'type':'date'})
 		}
