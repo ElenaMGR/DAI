@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Practica 8{% endblock %}
+
+{% block html_head %}
+
+<script src="/static/js/practica8.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<nav class="navbar navbar-light bg-light justify-content-between">
+	<form>
+		<button type="button" class="btn btn-secondary my-2 my-sm-0" onclick="cambiarModo()">Modo nocturno</button>
+	</form>
+	<form method="post" class="form-inline">
+		<input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search">
+		<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+	</form>
+</nav>
+
+<div class="table-responsive" style="height: 500px;">
+	<table id="tableP8" class="table table-bordered table-hover table-sm table-light">
+		<thead id="table-header">
+			<tr>
+				<th>IMDB</th>
+				<th>Title</th>
+				<th>Year</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="tbodyP8">
+			<div class="spinner-border"></div>
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}

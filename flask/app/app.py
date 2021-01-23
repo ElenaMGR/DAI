@@ -879,3 +879,22 @@ class Movie(Resource):
 
 api.add_resource(MovieList, "/api2/movies")
 api.add_resource(Movie, '/api2/movies/<id>')
+
+
+#########################################################
+#														#
+#					Práctica 5							#
+#														#
+#########################################################
+
+@app.route('/practica8', methods=['GET', 'POST'])
+def practica8():
+	pags_visitadas()
+	mensaje = None
+	episodios = None
+
+	return render_template('practica8.html',
+			episodios=episodios,
+			mensaje = mensaje,
+			login=session['username'],
+			rank=session['urls'])
