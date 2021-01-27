@@ -23,3 +23,13 @@ services:
             - "8000:8000"
         depends_on:
             - db
+    nginx:
+        image: nginx:alpine
+        ports:
+            - 80:80
+        # directorios para el archivo de configuración y archivos del static
+        volumes:
+            - ./conf:/etc/nginx/conf.d
+            - ./web/static:/var/www/static 
+        depends_on:
+            - web
