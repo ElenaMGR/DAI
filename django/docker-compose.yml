@@ -16,7 +16,9 @@ services:
             - 8080:8080
     web:
         build: app
-        command: python manage.py runserver 0.0.0.0:8000
+        restart: always
+        command: gunicorn sitio_web.wsgi:application --bind 0.0.0.0:8000
+        # command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./app:/app
         ports:
@@ -27,9 +29,8 @@ services:
         image: nginx:alpine
         ports:
             - 80:80
-        # directorios para el archivo de configuración y archivos del static
         volumes:
             - ./conf:/etc/nginx/conf.d
-            - ./web/static:/var/www/static 
+            - ./app/static:/var/www/static 
         depends_on:
             - web

@@ -19,3 +19,9 @@ django-migrate:
 
 django-createsuperuser:
 	docker-compose run web python manage.py createsuperuser
+
+django-collectstatic:
+	docker-compose run web python manage.py collectstatic
+
+django-collectstatic-clear:
+	docker-compose run web python manage.py collectstatic --clear
