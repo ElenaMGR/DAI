@@ -883,7 +883,7 @@ api.add_resource(Movie, '/api2/movies/<id>')
 
 #########################################################
 #														#
-#					Práctica 5							#
+#					Práctica 8							#
 #														#
 #########################################################
 
@@ -898,3 +898,38 @@ def practica8():
 			mensaje = mensaje,
 			login=session['username'],
 			rank=session['urls'])
+
+
+#########################################################
+#														#
+#					Práctica 10							#
+#														#
+#########################################################
+
+@app.route('/mostrarMapa', methods=['GET', 'POST'])
+def mostrarMapa():
+	pags_visitadas(),
+
+	return render_template('mostrarMapa.html',
+			login=session['username'],
+			rank=session['urls'])
+
+
+@app.route('/api/terremotos', methods=['GET'])
+def api_terremotos():
+	if request.method == 'GET':
+		lista = []
+		terremotos = db.terremotos.find()
+		for terremoto in terremotos:
+			lista.append({
+				'id':    str(terremoto.get('_id')), # pasa a string el ObjectId
+				'Latitud': terremoto.get('Latitud'), 
+				'Longitud':  terremoto.get('Longitud'),
+				'Profundidad':  terremoto.get('Profundidad'),
+				'Magnitud':  terremoto.get('Magnitud'),
+				'Fecha':  terremoto.get('Fecha'),
+				'Hora':  terremoto.get('Hora'),
+				'Intensidad':  terremoto.get('Intensidad'),
+				'Localizacion':  terremoto.get('Localización')
+			})
+		return jsonify(lista)
